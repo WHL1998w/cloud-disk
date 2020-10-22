@@ -2,22 +2,31 @@
 	<view>
 		<!-- 自定义导航栏 -->
 		<nav-bar>
-			<text slot="left" class="font-md ml-3">首页</text>
-			<template slot="right">
-				<view
-					style="width: 60rpx;height: 60rpx;"
-					class="flex align-center justify-center bg-icon rounded-circle mr-3"
-				>
-					<text class="iconfont icon-zengjia"></text>
-				</view>
-				<view
-					style="width: 60rpx;height: 60rpx;"
-					class="flex align-center justify-center bg-icon rounded-circle mr-3"
-				>
-					<text class="iconfont icon-gengduo"></text>
-				</view>
+			<template v-if="checkCount === 0">
+				<text slot="left" class="font-md ml-3">首页</text>
+				<template slot="right">
+					<view
+						style="width: 60rpx;height: 60rpx;"
+						class="flex align-center justify-center bg-icon rounded-circle mr-3"
+					>
+						<text class="iconfont icon-zengjia"></text>
+					</view>
+					<view
+						style="width: 60rpx;height: 60rpx;"
+						class="flex align-center justify-center bg-icon rounded-circle mr-3"
+					>
+						<text class="iconfont icon-gengduo"></text>
+					</view>
+				</template>
 			</template>
+			
+			<template v-else>
+				<view slot="left" class="font-md ml-3 text-primary" @click="handleCheckAll(false)">取消</view>
+				<text class="font-md font-weight-bold">已选中{{checkCount}}个</text>
+				<text slot="right" class="font-md mr-3 text-primary" @click="handleCheckAll(true)">全选</text>
+			</template>	
 		</nav-bar>
+		
 		<!-- 搜索框 -->
 		<view class="px-3 py-2">
 			<view class="position-relative">
@@ -36,7 +45,7 @@
 			</view>
 		</view>
 		<!-- 封装列表 -->
-		<f-list v-for="(item, index) in list" :key="index" :item="item" :index="index" @select="@select"></f-list>
+		<f-list v-for="(item, index) in list" :key="index" :item="item" :index="index" @select="select"></f-list>
 	</view>
 </template>
 
@@ -97,6 +106,21 @@ export default {
 		select(e){
 			//接受到子组件传递过来的索引选中状态，将对应的list中的数据更新
 			this.list[e.index].checked = e.value
+		},
+		handleCheckAll(checked){
+			this.list.forEach(item => {
+				item.checked = checked;
+			});
+		}
+	},
+	computed:{
+		//选中列表
+		checkList(){
+			return this.list.filter(item => item.checked);
+		},
+		//选中数量
+		checkCount(){
+			return this.checkList.length;
 		}
 	}
 };
