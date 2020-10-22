@@ -14,26 +14,26 @@
 
 <script>
 const icons = {
-	dir: {
-		icon: 'icon-caidan',
-		color: 'text-warning'
-	},
-	image: {
-		icon: 'icon-faxian',
-		color: 'text-success'
-	},
-	video: {
-		icon: 'icon-yiwen',
-		color: 'text-primary'
-	},
-	text: {
-		icon: 'icon-bianji',
-		color: 'text-info'
-	},
-	none: {
-		icon: 'icon-pinglun',
-		color: 'text-muted'
-	}
+  dir: {
+    icon: 'icon-file-b-2',
+    color: 'text-warning'
+  },
+  image: {
+    icon: 'icon-file-b-6',
+    color: 'text-success'
+  },
+  video: {
+    icon: 'icon-file-b-9',
+    color: 'text-primary'
+  },
+  text: {
+    icon: 'icon-file-s-7',
+    color: 'text-info'
+  },
+  none: {
+    icon: 'icon-file-b-8',
+    color: 'text-muted'
+  }
 };
 export default {
 	props: {
