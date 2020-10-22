@@ -69,8 +69,18 @@
 		      </view>
 		    </view>
 		
-		<!-- 是否需要删除 -->
-		<f-dialog ref="dialog">是否删除选中的文件？</f-dialog>
+		<!-- 是否需要删除，通过ref指定为delete对话框 -->
+		<f-dialog ref="delete">是否删除选中的文件？</f-dialog>
+		<!-- 重命名，通过ref定义不同的对话框对象，不同操作弹出的dialog是不同的对象 -->
+		<f-dialog ref="rename">
+			<input 
+				type="text"
+				v-model="renameValue"
+				class="flex-1 bg-light rounded px-2"
+				style="height: 95rpx;"
+				placeholder="重命名"
+			/>
+		</f-dialog>
 	</view>
 </template>
 
@@ -86,6 +96,7 @@ export default {
 	},
 	data() {
 		return {
+			renameValue: '',
 			list: [
 				{
 					type: 'dir',
@@ -145,12 +156,30 @@ export default {
 			switch(item.name){
 				case '删除':
 					this.$refs.dialog.open(close =>{
+						//对list进行过滤，留下未被选中的
+						this.list = this.list.filter(item => !item.checked);
 						close();
-						//在这里可以写点点击删除需要做的回调时间，这里现在控制台模拟，实际需要把checkList移除掉
-						console.log('删除文件');
-						console.log(this.checkList);
+						uni.showToast({
+							title:: '删除成功',
+							icon: 'none'
+						})
 					});
 					break;
+					case '重命名':
+					//重命名只能对单个文件，所以this.checkList[0],也就是唯一元素
+						this.renameValue = this.checkList[0].name;
+						this.$refs.rename.open(close => {
+							if(this.renameValue == ''){
+								return uni.showToast({
+									title: '文件名称不能为空',
+									icon: 'none'
+								});
+							}
+							//更新该元素的name值,实时看到效果
+							this.checkList[0].name = this.renameValue;
+							close();
+						});
+					break;				
 				default:
 				break;				
 			}
