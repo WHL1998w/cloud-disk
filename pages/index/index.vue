@@ -61,6 +61,7 @@
 		          v-for="(item, index) in actions"
 		          :key="index"
 		          hover-class="bg-hover-primary"
+				  @click="handleBottomEvent(item)"
 		        >
 		          <text class="iconfont" :class="item.icon"></text>
 		          {{ item.name }}
@@ -68,16 +69,20 @@
 		      </view>
 		    </view>
 		
+		<!-- 是否需要删除 -->
+		<f-dialog ref="dialog">是否删除选中的文件？</f-dialog>
 	</view>
 </template>
 
 <script>
 import navBar from '@/components/common/nav-bar.vue';
 import fList from '@/components/common/f-list.vue';
+import fDialog from '@/components/common/f-dialog.vue'
 export default {
 	components: {
 		navBar,
-		fList
+		fList,
+		fDialog
 	},
 	data() {
 		return {
@@ -134,6 +139,21 @@ export default {
 			this.list.forEach(item => {
 				item.checked = checked;
 			});
+		},
+		//处理底部操作条事件，这里仅对“删除”
+		handleBottomEvent(item){
+			switch(item.name){
+				case '删除':
+					this.$refs.dialog.open(close =>{
+						close();
+						//在这里可以写点点击删除需要做的回调时间，这里现在控制台模拟，实际需要把checkList移除掉
+						console.log('删除文件');
+						console.log(this.checkList);
+					});
+					break;
+				default:
+				break;				
+			}
 		}
 	},
 	//计算属性
