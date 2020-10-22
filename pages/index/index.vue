@@ -36,7 +36,7 @@
 			</view>
 		</view>
 		<!-- 封装列表 -->
-		<block v-for="(item, index) in list" :key="index"><f-list :item="item" :index="index"></f-list></block>
+		<f-list v-for="(item, index) in list" :key="index" :item="item" :index="index" @select="@select"></f-list>
 	</view>
 </template>
 
@@ -93,7 +93,12 @@ export default {
 			}
 		});
 	},
-	methods: {}
+	methods: {
+		select(e){
+			//接受到子组件传递过来的索引选中状态，将对应的list中的数据更新
+			this.list[e.index].checked = e.value
+		}
+	}
 };
 </script>
 
