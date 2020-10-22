@@ -46,6 +46,28 @@
 		</view>
 		<!-- 封装列表 -->
 		<f-list v-for="(item, index) in list" :key="index" :item="item" :index="index" @select="select"></f-list>
+		
+		<!-- 底部操作条 -->
+		    <!-- 选中个数大于0才会出现这个操作条 -->
+		    <view v-if="checkCount > 0">
+		      <!-- 这里要留一定的高度，因为底部操作跳需要被固定在底部，并空出底部tabbar高度的地方 -->
+		      <view style="height: 115rpx;"></view>
+		      <!-- 操作条容器的样式，高度，颜色，固定在底部，垂直方向拉升效果 -->
+		      <view style="height: 115rpx;" class="flex align-stretch bg-primary text-white fixed-bottom">
+		        <!-- 根据元素个数等分容器，所以要么四个等分，要么两个等分，行高的修改可以让图标和文字之间的距离变得合理，点击还会变色:hover-class -->
+		        <view
+		          class="flex-1 flex flex-column align-center justify-center"
+		          style="line-height: 1.5;"
+		          v-for="(item, index) in actions"
+		          :key="index"
+		          hover-class="bg-hover-primary"
+		        >
+		          <text class="iconfont" :class="item.icon"></text>
+		          {{ item.name }}
+		        </view>
+		      </view>
+		    </view>
+		
 	</view>
 </template>
 
@@ -107,12 +129,14 @@ export default {
 			//接受到子组件传递过来的索引选中状态，将对应的list中的数据更新
 			this.list[e.index].checked = e.value
 		},
+		//全选、取消全选。遍历数组，将所有元素置为入参的值
 		handleCheckAll(checked){
 			this.list.forEach(item => {
 				item.checked = checked;
 			});
 		}
 	},
+	//计算属性
 	computed:{
 		//选中列表
 		checkList(){
@@ -121,6 +145,31 @@ export default {
 		//选中数量
 		checkCount(){
 			return this.checkList.length;
+		},
+		//操作菜单
+		actions(){
+			if(this.checkCount > 1){
+				return[{
+					icon: "icon-xiazai",
+					name: "下载"
+				},{
+					icon: "icon-shanchu",
+					name: "删除"
+				}]
+			}
+			return[{
+				icon: "icon-xiazai",
+				name: "下载"
+			},{
+				icon: "icon-fenxiang-1",
+				name: "分享"
+			},{
+				icon: "icon-shanchu",
+				name: "删除"
+			},{
+				icon: "icon-chongmingming",
+				name: "重命名"
+			}]
 		}
 	}
 };
