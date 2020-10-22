@@ -8,6 +8,7 @@
 					<view
 						style="width: 60rpx;height: 60rpx;"
 						class="flex align-center justify-center bg-icon rounded-circle mr-3"
+						@tap="openAddDialog"
 					>
 						<text class="iconfont icon-zengjia"></text>
 					</view>
@@ -81,6 +82,30 @@
 				placeholder="重命名"
 			/>
 		</f-dialog>
+		
+		<!-- 添加操作条，应当能理解这里ref的作用了，type表示弹出的位置类型，具体取值都在popup子组件中 -->
+		<uni-popup ref="add" type="bottom">
+			<view class="bg-white flex" style="height: 200rpx;">
+				<!-- 遍历addlist数组，纵向flex,为每个操作分配等高空间，每个操作有名称和图标 -->
+				<view 
+					class="flex-1 flex align-center justify-center flex-column"
+					hover-class="bg-light"
+					v-for="(item,index) in addList"
+					:key="index"
+					@tap="handleAddEvent(item)"
+				>
+					<!-- 每个操作的图标，可以传入图标名称和颜色，灵活 -->
+					<text 
+						class="rounded-circle bg-light iconfont flex align-center justify-center"
+						style="width: 110rpx;height: 110rpx;"
+						:class="item.icon + ' ' + item.color"
+					>
+					</text>
+					<!-- 每个操作的名称 -->
+					<text class="font text-muted">{{ item.name }}</text>
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -88,11 +113,13 @@
 import navBar from '@/components/common/nav-bar.vue';
 import fList from '@/components/common/f-list.vue';
 import fDialog from '@/components/common/f-dialog.vue'
+import uniPopup from '@/components/uni-ui/uni-popup/uni-popup.vue';
 export default {
 	components: {
 		navBar,
 		fList,
-		fDialog
+		fDialog,
+		uniPopup
 	},
 	data() {
 		return {
@@ -128,7 +155,24 @@ export default {
 					create_time: '2020-10-21 08:00',
 					checked: false
 				}
-			]
+			],
+			addList:[{
+						icon:"icon-file-b-6",
+						color:"text-success",
+						name:"上传图片"
+					},{
+						icon:"icon-file-b-9",
+						color:"text-primary",
+						name:"上传视频"
+					},{
+						icon:"icon-file-b-8",
+						color:"text-muted",
+						name:"上传文件"
+					},{
+						icon:"icon-file-b-2",
+						color:"text-warning",
+						name:"新建文件夹",
+					}]
 		};
 	},
 	onLoad: function() {
@@ -183,7 +227,11 @@ export default {
 				default:
 				break;				
 			}
+		},
+		openAddDialog(){
+			this.$refs.add.open();
 		}
+		
 	},
 	//计算属性
 	computed:{
