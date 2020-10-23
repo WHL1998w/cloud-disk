@@ -166,10 +166,18 @@ export default {
 					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2881%29.jpg',
 					create_time: '2020-10-21 08:00',
 					checked: false
+				},
+				{
+					type: 'video',
+					name: '秋天.mp4',
+					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/viedo/%E7%A7%8B%E5%A4%A9.mp4',
+					create_time: '2020-10-23 08:40',
+					checked: false
 				},			
 				{
 					type: 'video',
 					name: 'uniapp实战教程.mp4',
+					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/viedo/%E5%8F%AF%E7%88%B1%E7%9A%84%E6%B8%A9%E6%B8%A9.mp4',
 					create_time: '2020-10-21 08:00',
 					checked: false
 				},
@@ -303,6 +311,13 @@ export default {
 					current:item.data,
 					urls:images.map(item=>item.data)
 				})
+					break;
+				case 'video':
+				uni.navigateTo({
+					url: '../video/video?url='+item.data + '&title=' + item.name,
+				});
+					break;
+				default:
 					break;
 			}
 		}
