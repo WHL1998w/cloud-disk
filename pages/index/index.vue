@@ -46,7 +46,10 @@
 			</view>
 		</view>
 		<!-- 封装列表 -->
-		<f-list v-for="(item, index) in list" :key="index" :item="item" :index="index" @select="select"></f-list>
+		<f-list v-for="(item, index) in list" :key="index" 
+		:item="item" :index="index"
+		@click="doEvent(item)"
+		 @select="select"></f-list>
 		
 		<!-- 底部操作条 -->
 		    <!-- 选中个数大于0才会出现这个操作条 -->
@@ -146,9 +149,24 @@ export default {
 				{
 					type: 'image',
 					name: '风景.jpg',
+					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2882%29.jpg',
 					create_time: '2020-10-21 08:00',
 					checked: false
 				},
+				{
+					type: 'image',
+					name: '壁纸.jpg',
+					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2884%29.jpg',
+					create_time: '2020-10-21 08:00',
+					checked: false
+				},
+				{
+					type: 'image',
+					name: '头像.jpg',
+					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2881%29.jpg',
+					create_time: '2020-10-21 08:00',
+					checked: false
+				},			
 				{
 					type: 'video',
 					name: 'uniapp实战教程.mp4',
@@ -216,7 +234,7 @@ export default {
 						this.list = this.list.filter(item => !item.checked);
 						close();
 						uni.showToast({
-							title:: '删除成功',
+							title: '删除成功',
 							icon: 'none'
 						})
 					});
@@ -272,7 +290,22 @@ export default {
 				default:
 					break;
 			}
-		}		
+		},
+		//列表点击事件处理
+		doEvent(item){
+			switch (item.type){
+				case 'image':
+				//预览图片
+				let images = this.list.filter(item =>{
+					return item.type === 'image'
+				})
+				uni.previewImage({
+					current:item.data,
+					urls:images.map(item=>item.data)
+				})
+					break;
+			}
+		}
 	},
 	//计算属性
 	computed:{
