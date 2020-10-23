@@ -15,6 +15,7 @@
 					<view
 						style="width: 60rpx;height: 60rpx;"
 						class="flex align-center justify-center bg-icon rounded-circle mr-3"
+						@click="openSortDialog"
 					>
 						<text class="iconfont icon-gengduo"></text>
 					</view>
@@ -120,6 +121,22 @@
 				</view>
 			</view>
 		</uni-popup>
+		
+		<!-- 排序对话框 -->
+		<uni-popup ref="sort" type="bottom">
+			<view class="bg-white">
+				<view
+					v-for="(item, index) in sortOptions"
+					:key="index"
+					:class="index === sortIndex ? 'text-main' : 'text-dark'"
+					hover-class="bg-light"
+					@click="changeSort(index)"
+					class="flex align-center justify-center py-3 font border-bottom border-light-secondary"
+				>
+					{{ item.name }}
+				</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -137,6 +154,16 @@ export default {
 	},
 	data() {
 		return {
+			// 文件排序弹框
+			sortIndex: 0,
+			sortOptions: [
+				{
+					name: '按名称排序'
+				},
+				{
+					name: '按时间排序'
+				}
+			],
 			renameValue: '',
 			newdirname: '',
 			list: [
@@ -320,6 +347,14 @@ export default {
 				default:
 					break;
 			}
+		},
+		// 切换排序
+		changeSort(index) {
+			this.sortIndex = index;
+			this.$refs.sort.close();
+		},
+		openSortDialog() {
+			this.$refs.sort.open();
 		}
 	},
 	//计算属性
