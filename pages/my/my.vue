@@ -42,7 +42,11 @@ export default {
 		  uni.navigateTo({
 		  	  url: '../login/login'
 		  });
+	  },
+	  onLoad(){
+		  console.log(this.$store.state.user)
 	  }
+	  
   }
 };
 </script>

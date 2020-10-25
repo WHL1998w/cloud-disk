@@ -59,15 +59,35 @@ export default {
 		};
 	},
 	methods: {
+		// 判断现在是登录还是注册
 		changeType() {
 			this.type = this.type === 'login' ? 'reg' : 'login';
 		},
 		handleClick() {
-			if (this.type === 'login') {
-				uni.switchTab({
-					url: '../index/index'
+			let msg = this.type === 'login' ? '登录' : '注册';
+			//拼接请求的url
+			this.$H.post('/' + this.type, this.form).then(res =>{
+				uni.showToast({
+					title: msg + '成功',
+					icon: 'none'
 				});
-			}
+				// 登录
+				if(this.type === 'login'){
+					this.$store.dispatch('login', res).then(result => {
+						uni.switchTab({
+							url: '../index/index'
+						});
+					});
+				//注册
+				}else{
+					this.form = {
+						username: '',
+						password: '',
+						repassword: ''
+					};
+					this.changeType();
+				}
+			});
 		}
 	}
 };
