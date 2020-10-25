@@ -260,17 +260,28 @@ export default {
 					});
 					break;
 					case '重命名':
-					//重命名只能对单个文件，所以this.checkList[0],也就是唯一元素
+						//重命名只能对单个文件进行，所以取this.checkList[0]，也就是选中的唯一元素
 						this.renameValue = this.checkList[0].name;
 						this.$refs.rename.open(close => {
-							if(this.renameValue == ''){
+							if (this.renameValue == '') {
 								return uni.showToast({
 									title: '文件名称不能为空',
 									icon: 'none'
 								});
 							}
-							//更新该元素的name值,实时看到效果
-							this.checkList[0].name = this.renameValue;
+							this.$H.post('/file/rename',{
+								id:this.checkList[0].id,
+								file_id:this.file_id,
+								name:this.renameValue
+							},{
+								token:true
+							}).then(res=>{
+								this.checkList[0].name=this.renameValue;
+								uni.showToast({
+									title:'重命名成功',
+									icon:'none'
+								});
+							});
 							close();
 						});
 					break;				
