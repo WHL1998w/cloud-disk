@@ -25,7 +25,7 @@ export default new Vuex.Store({
 			uni.reLaunch({
 				url: '/pages/login/login'
 			})
-		}
+		},
 		//登录
 		login({ state },user){
 			state.user = user

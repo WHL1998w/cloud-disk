@@ -58,7 +58,7 @@ export default {
   onShow() {
   	//每次进入页面，都要获取用户的空间大小
 	this.getSize();
-  }
+  },
   methods: {
 	  //请求接口，获得最新的空间大小，并提交给vuex更新
 	  getSize(){

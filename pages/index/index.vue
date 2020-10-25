@@ -166,61 +166,7 @@ export default {
 			],
 			renameValue: '',
 			newdirname: '',
-			list: [
-				{
-					type: 'dir',
-					name: '我的笔记',
-					create_time: '2020-10-21 08:00',
-					checked: false
-				},
-				{
-					type: 'image',
-					name: '风景.jpg',
-					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2882%29.jpg',
-					create_time: '2020-10-21 08:00',
-					checked: false
-				},
-				{
-					type: 'image',
-					name: '壁纸.jpg',
-					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2884%29.jpg',
-					create_time: '2020-10-21 08:00',
-					checked: false
-				},
-				{
-					type: 'image',
-					name: '头像.jpg',
-					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2881%29.jpg',
-					create_time: '2020-10-21 08:00',
-					checked: false
-				},
-				{
-					type: 'video',
-					name: '秋天.mp4',
-					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/viedo/%E7%A7%8B%E5%A4%A9.mp4',
-					create_time: '2020-10-23 08:40',
-					checked: false
-				},			
-				{
-					type: 'video',
-					name: 'uniapp实战教程.mp4',
-					data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/viedo/%E5%8F%AF%E7%88%B1%E7%9A%84%E6%B8%A9%E6%B8%A9.mp4',
-					create_time: '2020-10-21 08:00',
-					checked: false
-				},
-				{
-					type: 'text',
-					name: '记事本.txt',
-					create_time: '2020-10-21 08:00',
-					checked: false
-				},
-				{
-					type: 'none',
-					name: '压缩包.rar',
-					create_time: '2020-10-21 08:00',
-					checked: false
-				}
-			],
+			list: [],
 			addList:[{
 						icon:"icon-file-b-6",
 						color:"text-success",
@@ -249,7 +195,35 @@ export default {
 			}
 		});
 	},
+	onLoad() {
+		this.getData();
+	}
 	methods: {
+		// 将数据格式转化为我们需要显示的样子，不同的文件类型，是否选中
+		formatList(list) {
+			return list.map(item => {
+				let type = 'none';
+				if (item.isdir === 1) {
+					type = 'dir';
+				} else {
+					type = item.ext.split('/')[0] || 'none';
+				}
+				return {
+					type,
+					checked: false,
+					...item
+				};
+			});
+		},
+		getData() {
+			this.$H.get('/file?file_id=0',{
+				token: true
+			}).then(res => {
+				console.log(res);
+				this.list = this.formatList(res.rows);
+			})
+			
+		},
 		select(e){
 			//接受到子组件传递过来的索引选中状态，将对应的list中的数据更新
 			this.list[e.index].checked = e.value
