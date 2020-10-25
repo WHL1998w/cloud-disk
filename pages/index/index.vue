@@ -3,7 +3,19 @@
 		<!-- 自定义导航栏 -->
 		<nav-bar>
 			<template v-if="checkCount === 0">
-				<text slot="left" class="font-md ml-3">首页</text>
+				<!-- 插槽再一次发挥逆天作用，进入子目录，左边将变成返回箭头，导航栏变成子目录名称 -->
+				<template slot="left">
+					<view
+						style="width: 60rpx;height: 60rpx;"
+						class="flex align-center justify-center bg-light rounded-circle ml-3"
+						hover-class="bg-hover-light"
+						@tap="backUp"
+						v-if="current" >
+						<text class="iconfont icon-fanhui"></text>
+					</view>
+					<text class="font-md ml-3">{{ current ? current.name : '首页' }}</text>
+				</template>
+				
 				<template slot="right">
 					<view
 						style="width: 60rpx;height: 60rpx;"
@@ -154,14 +166,19 @@ export default {
 	},
 	data() {
 		return {
+			//记录路由
+			dirs: [],
 			// 文件排序弹框
 			sortIndex: 0,
-			sortOptions: [
+			// sortOptions数组记录排序方式，其中的key可以作为查询参数传到后台，去按照这个排序
+		    sortOptions: [
 				{
-					name: '按名称排序'
+					name: '按名称排序',
+					key: 'name'
 				},
 				{
-					name: '按时间排序'
+					name: '按时间排序',
+					key: 'created_time'
 				}
 			],
 			renameValue: '',
@@ -186,18 +203,14 @@ export default {
 					}]
 		};
 	},
-	onLoad: function() {
-		uni.request({
-			url: 'http://localhost:7001/list',
-			method: 'GET',
-			success: res => {
-				console.log(res.data);
-			}
-		});
-	},
 	onLoad() {
+		let dirs = uni.getStorageSync('dirs');
+		if (dirs) {
+			this.dirs = JSON.parse(dirs);
+		}
+		// 初始化数据
 		this.getData();
-	}
+	},
 	methods: {
 		// 将数据格式转化为我们需要显示的样子，不同的文件类型，是否选中
 		formatList(list) {
@@ -215,14 +228,12 @@ export default {
 				};
 			});
 		},
-		getData() {
-			this.$H.get('/file?file_id=0',{
-				token: true
-			}).then(res => {
-				console.log(res);
+		// 每次请求API接口的时候，把最新的file_id和选取的orderby排序方式带
+		 getData() {
+			let orderby = this.sortOptions[this.sortIndex].key;
+			this.$H.get(`/file?file_id=${this.file_id}&orderby=${orderby}`, {token: true}).then(res => {
 				this.list = this.formatList(res.rows);
-			})
-			
+			});			
 		},
 		select(e){
 			//接受到子组件传递过来的索引选中状态，将对应的list中的数据更新
@@ -319,20 +330,59 @@ export default {
 				});
 					break;
 				default:
+				//文件夹的点击事件
+				//把当前元素push到路由数组中去，然后用这个目录的id，
+				//去请求它的层级里的数据，同时存到本地存储中
+					this.dirs.push({
+						id: item.id,
+						name: item.name
+					});
+					this.getData();
+					uni.setStorage({
+						key: 'dirs',
+						ata: JSON.stringify(this.dirs)
+					});
 					break;
 			}
 		},
 		// 切换排序
 		changeSort(index) {
+			//根据最新选的排序方式去请求接口数据
 			this.sortIndex = index;
+			this.getData();
 			this.$refs.sort.close();
 		},
 		openSortDialog() {
 			this.$refs.sort.open();
-		}
+		},
+		// 返回上一个目录
+		backUp() {
+			this.dirs.pop();
+			this.getData();
+			uni.setStorage({
+				key: 'dirs',
+				data: JSON.stringify(this.dirs)
+			});
+		}		
 	},
 	//计算属性
 	computed:{
+		// 实时根据当前dirs数组的变化，file_id计算属性取得应该传到后端的file_id参数（就是当前目录），
+		// current计算属性则用来切换导航栏样式
+		file_id() {
+			let l = this.dirs.length;
+			if (l === 0) {
+				return 0;
+			}
+			return this.dirs[l - 1].id;
+		},
+		current() {
+			let l = this.dirs.length;
+			if (l === 0) {
+				return false;
+			}
+			return this.dirs[l - 1];
+		},
 		//选中列表
 		checkList(){
 			return this.list.filter(item => item.checked);

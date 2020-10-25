@@ -21,7 +21,8 @@ export default new Vuex.Store({
 			state.token = null
 			uni.removeStorageSync('user')
 			uni.removeStorageSync('token')
-			
+			uni.removeStorageSync('dirs');
+			//重启应用
 			uni.reLaunch({
 				url: '/pages/login/login'
 			})
