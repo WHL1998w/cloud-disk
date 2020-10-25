@@ -55,6 +55,7 @@
 					type="text"
 					class="bg-light font-md rounded-circle"
 					placeholder="搜索网盘文件"
+					@input="search"
 				/>
 			</view>
 		</view>
@@ -387,7 +388,20 @@ export default {
 				key: 'dirs',
 				data: JSON.stringify(this.dirs)
 			});
-		}		
+		},
+		//搜索功能，关键字为空就走请求所有数据接口，否则就将文本框实时输入的内容作为关键词进行搜索
+		search(e){
+			if(e.detail.value== ''){
+				return this.getData();
+			}
+			this.$H
+				get('/file/search?keyword='+e.detail.value,{
+					token:true
+				})
+				.then(res=>{
+					this.list = this.formatList(res.rows);
+				})
+			}
 	},
 	//计算属性
 	computed:{
