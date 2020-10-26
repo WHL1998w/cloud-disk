@@ -17,29 +17,57 @@
 		<swiper :duration="250" class="flex-1 flex" :current="tabIndex" @change="changeTab($event.detail.current)">
 			<swiper-item class="flex-1 flex" v-for="(item,index) in tabBars" :key="index">
 				<scroll-view scroll-y="true" class="flex-1">
-					<view style="height: 60rpx;" class="bg-light flex align-center font-sm text-muted">文件下载至storage/xxxx/xxxxx</view>
-					<view class="p-2 border-bottom border-light-secondary font text-muted">
-							下载中（{{downing.length}})
-					</view>
-						
-					<f-list  v-for="(item,index) in  downing " :key="'i'+index" :item="item" :index="index" >
-						<view class="flex align-center text-main" style="height: 70rpx;">
-							<text class="iconfont icon-zanting"></text>
-							<text class="ml-1">{{item.download}}%</text>
+					<!-- 下载列表 -->
+					<template v-if="index===0">
+						<view style="height: 60rpx;" class="bg-light flex align-center font-sm px-2 text-muted">
+								文件下载至：_doc/uniapp_temp_1603680037252/download/
 						</view>
-						<!-- 进度条组件，uniapp自带，percent绑定下载百分比数值 -->
-						<progress slot="bottom" :percent="item.download" activeColor="#009CFF" :stroke-width="4" ></progress>
-					</f-list>
-					<view class="p-2 border-bottom border-light-secondary font  text-muted">
-						下载完成({{downed.length}})
-					</view>
-					<f-list
-						v-for="(item,index) in downed" 
-						:key="'d'+index"
-						:item="item"
-						:index="index"
-						:showRight="false"
-					></f-list>
+						<view class="p-2 border-bottom border-light-secondary font text-muted">
+							下载中（{{downing.length}}）
+						</view>
+						<f-list v-for="(item,index) in downing " :key="'i'+index" :item="item" :index="index">
+							<view class="flex align-center text-main"  style="height: 70rpx;">
+								<text class="iconfont icon-zanting"></text>
+								<text class="ml-1">{{item.progress}}%</text>
+							</view> 
+							<!-- 进度条组件，uniapp自带，percent绑定下载百分比数值 -->
+							<progress slot="bottom" :percent="item.progress" activeColor="#009CFF" :stroke-width="4" ></progress>
+						</f-list>
+						<view class="p-2 border-bottom border-light-secondary font text-muted">
+							下载完成（{{downed.length}}）
+						</view>
+						<f-list
+							v-for="(item,index) in downed" 
+							:key="'d'+index"
+							:item="item"
+							:index="index"
+							:showRight="false"
+						></f-list> 
+					</template>
+					<!-- 上传列表 -->
+					<template v-else>
+						<view class="p-2 border-bottom border-light-secondary font text-muted">
+							上传中（{{uploading.length}}）
+						</view>
+						<f-list v-for="(item,index) in uploading " :key="'i'+index" :item="item" :index="index">
+							<view class="flex align-center text-main"  style="height: 70rpx;">
+									<text class="iconfont icon-zanting"></text>
+									<text class="ml-1">{{item.progress}}%</text>
+							</view>
+							<!-- 进度条组件，uniapp自带，percent绑定下载百分比数值 -->
+							<progress slot="bottom" :percent="item.progress" activeColor="#009CFF" :stroke-width="4" ></progress>
+						</f-list>
+						<view class="p-2 border-bottom border-light-secondary font text-muted">
+								上传完成（{{uploaded.length}}）
+						</view>
+						<f-list
+							v-for="(item,index) in uploaded" 
+							:key="'d'+index"
+							:item="item"
+							:index="index"
+							:showRight="false"
+						></f-list>
+					</template>
 				</scroll-view>
 			</swiper-item>
 		</swiper>		
@@ -49,6 +77,7 @@
 
 <script>
 	import fList from '@/components/common/f-list.vue'
+	import { mapState } from 'vuex';
 	export default {
 		components:{
 			fList,
@@ -63,53 +92,23 @@
 					{
 						name: '上传列表'
 					}
-				],
-				list: [
-					{
-						type: 'image',
-						name: '风景.jpg',
-						data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2882%29.jpg',
-						create_time: '2020-10-21 08:00',
-						download: 30,
-						checked: false
-					},
-					{
-						type: 'image',
-						name: '壁纸.jpg',
-						data: 'https://wanghuanle.oss-cn-beijing.aliyuncs.com/avatar/a%20%2884%29.jpg',
-						create_time: '2020-10-21 08:00',
-						download: 50,
-						checked: false
-					},
-					{
-						type: 'text',
-						name: '记事本.txt',
-						create_time: '2020-10-21 08:00',
-						download: 100,
-						checked: false
-					},
-					{
-						type: 'none',
-						name: '压缩包.rar',
-						create_time: '2020-10-21 08:00',
-						download: 100,
-						checked: false
-					}
-				],
+				]
 			};
 		},
 		computed:{
-			// 下载中
-		    downing() {
-				return this.list.filter(item => {
-					return item.download < 100;
-				})
+			...mapState({
+				uploadList:state=>state.uploadList,
+				// downList:state=>state.downList
+			}),
+			uploading(){
+				return this.uploadList.filter(item=>{
+					return item.progress<100;
+				});
 			},
-			// 下载完成
-			downed() {
-				return this.list.filter(item => {
-					return item.download  === 100;
-				})
+			uploaded(){
+				return this.uploadList.filter(item=>{
+					return item.progress===100;
+				});
 			}
 		},
 		methods:{

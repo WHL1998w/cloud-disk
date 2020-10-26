@@ -9,22 +9,21 @@ import $H from '../common/request.js';
 export default new Vuex.Store({
 	state: {
 		//用来记录上传任务和下载任务
-		uploadList: [],
-		downlist: [],
+		downList:[],
+		uploadList:[],
 		user:null,
 		token:null
 	},
 	actions:{
-		//对上传下载任务初始化
 		initList({
 			state
-		}) {
+		})
+		{
 			if(state.user){
-				let d = uni.getStorageSync("downlist_" + state.user.id)
-				let u = uni.getStorageSync("uploadList_" + state.user.id)
-				
-				state.downlist = d ? JSON.parse(d) : []
-				state.uploadList = u ? JSON.parse(u) : []
+				let d=uni.getStorageSync("downList_"+state.user.id)
+				let u=uni.getStorageSync("uploadList_"+state.user.id)
+				state.downList=d?JSON.parse(d):[],
+				state.uploadList=u?JSON.parse(u):[]
 			}
 		},
 		//退出登录
@@ -65,30 +64,27 @@ export default new Vuex.Store({
 		//创建一个上传任务
 		createUploadJob({
 			state
-		}, obj){
+		},obj){
 			//添加到上传队列的最前面
-			state,uploadList.unshift(obj)
+			state.uploadList.unshift(obj)
 			//异步设置本地存储，记录键值对为：上传人和上传内容
 			uni.setStorage({
-				key: "uploadList_" + state.user.id,
-				data: JSON.stringify(state.uploadList)
+				key:"uploadList_"+state.user.id,
+				data:JSON.stringify(state.uploadList)
 			})
 		},
 		//更新上传任务进度
 		updateUploadJob({
 			state
-		}, obj){
-			//在上传队列中查找该用户的上传任务
-			let i = state.uploadList.findIndex(item => item.key === obj.key)
+		},obj){
+			let i =state.uploadList.findIndex(item=>item.key===obj.key)
 			//如果存在
-			if(i !== -1){
-				//更新proress属性的值和上传状态的值
-				state.uploadList[i].progress = obj.progress
-				state.uploadList[i].status = obj.status
-				//异步更新本地存储
+			if(i!== -1){
+				state.uploadList[i].progress=obj.progress
+				state.uploadList[i].status=obj.status
 				uni.setStorage({
-					key: "uploadList_" + state.user.id,
-					data: JSON.stringify(state.uploadList)
+					key:"uploadList_"+state.user.id,
+					data:JSON.stringify(state.uploadList)
 				})
 			}
 		}

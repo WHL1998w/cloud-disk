@@ -308,44 +308,44 @@ export default {
 			this.$refs.add.close();
 			switch(item.name){
 				case '上传图片':
-					//选择图片，限制为9张
-					uni.chooseImage({
-						count:9,
-						success: res => {
-							//选择图片成功，就循环异步调用上传接口
-							res.tempFiles.forEach(item => {
-								this.upload(item, 'image');
-							});
-						}
-					});
-					break;
-				case '新建文件夹':
-					this.$refs.newdir.open(close => {
-						if(this.newdirname == ''){
-							return uni.showToast({
-								title:'文件夹名称不能为空',
-								icon:'none'
-							});
-						}
-						//请求新增文件夹接口
-						this.$H.post('/file/createdir',{
-							file_id:this.file_id,
-							name:this.newdirname
-						},{
-							token:true
-						}).then(res=>{
-							this.genData();
-							uni.showToast({
-								title:'新建文件夹成功',
-								icon:'none'
-							});
+				//选择照片，限制为9张
+				uni.chooseImage({
+					count:9,
+					success:res=>{
+						//选择照片成功，就循环异步调用上传接口
+						res.tempFiles.forEach(item=>{
+							this.upload(item,'image');
 						});
-						close();
-						this.newdirname = '';
+					}
+				});
+				break;
+				case '新建文件夹':
+				this.$refs.newdir.open(close => {
+					if(this.newdirname == ''){
+						return uni.showToast({
+							title:'文件夹名称不能为空',
+							icon:'none'
+						});
+					}
+					//请求新增文件夹接口
+					this.$H.post('/file/createdir',{
+						file_id:this.file_id,
+						name:this.newdirname
+					},{
+						token:true
+					}).then(res=>{
+						this.genData();
+						uni.showToast({
+							title:'新建文件夹成功',
+							icon:'none'
+						});
 					});
-					break;
-				default:
-					break;
+					close();
+					this.newdirname = '';
+				});
+				break;
+			default:
+				break;
 			}
 		},
 		//列表点击事件处理
@@ -357,13 +357,13 @@ export default {
 					return item.type === 'image'
 				})
 				uni.previewImage({
-					current:item.data,
-					urls:images.map(item=>item.data)
+					current:item.url,
+					urls:images.map(item=>item.url)
 				})
-					break;
+				break;
 				case 'video':
 				uni.navigateTo({
-					url: '../video/video?url='+item.data + '&title=' + item.name,
+					url: '../video/video?url='+item.url + '&title=' + item.name,
 				});
 					break;
 				default:
@@ -414,50 +414,48 @@ export default {
 					this.list = this.formatList(res.rows);
 				});
 		},
-		//生成唯一ID
+		//生成唯一的key
 		getID(length){
 			return Number(
-				Math.random().toString().substr(3, length) + Date.now()
-			).toString(36);
+			Math.random().toString().substr(3,length)+Date.now()).toString(36);
 		},
 		//上传
-		upload(file, type){
+		upload(file,type){
 			//上传文件的类型
 			let t =type;
-			//上传的key.用来区分每个文件
-			const key = this.getID(8);
-			//构建上传文件的对象，文件名，类型，大小，唯一的key，进度，状态，创建时间
-			let obj = {
-				name: file.name,
-				type: t,
-				size: file.size,
+			//上传文件的key,用来区分每一个文件
+			const key =this.getID(8);
+			//构建上传文件的对象，文件名，类型，大小，唯一的Key,进度，状态，创建时间
+			let obj={
+				name:file.name,
+				type:t,
+				size:file.size,
 				key,
-				progress: 0,
-				status: true,
-				created_time: new Date().getTime()
+				progress:0,
+				status:true,
+				created_time:new Date().getTime()
 			};
-			//创建上传任务，分发给vuex的actions,异步上传调度，主要是实际上传进度的回调
-			this.$store.dispatch('createUploadJob', obj);
-			//上传,查询参数为当前位置所在目录的id,body参数为文件路径
+			//创建上传任务，分发给Vuex的Acitions，异步上传调度，主要是实现上传进度的调度
+			this.$store.dispatch('createUploadJob',obj);
+			//上传，查询参数为当前位置所在目录的id,body为参数为文件  路径
 			this.$H
-				.upload(
-					'/upload?file_id=' + this.file_id,
-					{
-						filePath: file.path
-					},
-					p => {
-						//更新上传任务进度
-						this.$store.dispatch('updateUploadJob',{
-							status: true,
-							progress: p,
-							key
-						});	
-					}
-				)
-				.then(res => {
-					//上传成功，请求数据更新列表
-					this.getData();
+			.upload(
+			'/upload?file_id='+this.file_id,
+			{
+				filePath:file.path,
+				},
+			p=>{
+				//更新上传任务进度
+				this.$store.dispatch('updateUploadJob',{
+					status:true,
+					progress:p,
+					key
 				});
+			}
+			).then(res=>{
+				//上传成功，请求数据更新列表
+				this.getData();
+			});
 		}
 	},
 	//计算属性
