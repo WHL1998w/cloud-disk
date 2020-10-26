@@ -87,6 +87,30 @@ export default new Vuex.Store({
 					data:JSON.stringify(state.uploadList)
 				})
 			}
+		},
+		//创建一个下载任务
+		createDownLoadJob({
+			state
+		},obj){
+			state.downList.unshift(obj)
+			uni.setStorage({
+				key:"downList_"+state.user.id,
+				data:JSON.stringify(state.downList)
+			})
+		},
+		//更新下载任务进度
+		updateDownLoadJob({
+			state
+		},obj){
+			let i=state.downList.findIndex(item=>item.key===obj.key)
+			if(i!==-1){
+				state.downList[i].progress=obj.progress
+				state.downList[i].status=obj.status
+				uni.setStorage({
+					key:"downList_"+state.user.id,
+					data:JSON.stringify(state.downList)
+				})
+			}
 		}
 	}
 })

@@ -270,7 +270,7 @@ export default {
 						close();
 					});
 					break;
-					case '重命名':
+				case '重命名':
 						//重命名只能对单个文件进行，所以取this.checkList[0]，也就是选中的唯一元素
 						this.renameValue = this.checkList[0].name;
 						this.$refs.rename.open(close => {
@@ -295,7 +295,10 @@ export default {
 							});
 							close();
 						});
-					break;				
+				break;
+				case '下载':
+					this.download();
+					break;
 				default:
 				break;				
 			}
@@ -456,6 +459,48 @@ export default {
 				//上传成功，请求数据更新列表
 				this.getData();
 			});
+		},
+		download(){
+			this.checkList.forEach(item=>{
+				if(item.isdir===0){
+					const key=this.getID(8);
+					let obj={
+						name:item.name,
+						type:item.type,
+						size:item.size,
+						key,
+						progress:0,
+						status:true,
+						created_time:new Date().getTime()
+					};
+					//创建下载任务
+					this.$store.dispatch('createDownLoadJob',obj);
+					let url=item.url;
+					let d=uni.downloadFile({
+						url,
+						success:res=>{
+							if(res.statusCode===200){
+								console.log('下载成功',res);
+								uni.saveFile({
+									tempFilePath:item.tempFilePath
+								});
+							}
+						}
+					});
+					d.onProgressUpdate(res=>{
+						this.$store.dispatch('updateDownLoadJob',{
+							progress:res.progress,
+							status:true,
+							key
+						});
+					});
+				}
+			});
+			uni.showToast({
+				title:'已加入下载任务',
+				icon:'none'
+			});
+			this.handleCheckAll(false);
 		}
 	},
 	//计算属性
