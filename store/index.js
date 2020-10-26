@@ -111,6 +111,16 @@ export default new Vuex.Store({
 					data:JSON.stringify(state.downList)
 				})
 			}
+		},
+		//清楚列表的方法
+		clearList({ state }){
+			if(state.user){
+				uni.removeStorageSync("downList_" + state.user.id)
+				uni.removeStorageSync("uploadList_"+state.user.id)
+				
+				state.uploadList = []
+				state.downList = []
+			}
 		}
 	}
 })
