@@ -12,6 +12,20 @@ import store from './store/index.js';
 Vue.prototype.store = store
 
 Vue.config.productionTip = false
+//全局的auth检测用户是否登录
+Vue.prototype.authMethod = (callback) => {
+	if (!store.state.token) {
+		uni.showToast({
+			title: '请先登录',
+			icon: 'none'
+		});
+		return uni.navigateTo({
+			url: '/pages/login/login',
+		});
+	}
+
+	callback()
+}
 
 App.mpType = 'app'
 
