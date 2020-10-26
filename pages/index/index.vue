@@ -307,6 +307,18 @@ export default {
 		handleAddEvent(item){
 			this.$refs.add.close();
 			switch(item.name){
+				case '上传图片':
+					//选择图片，限制为9张
+					uni.chooseImage({
+						count:9,
+						success: res => {
+							//选择图片成功，就循环异步调用上传接口
+							res.tempFiles.forEach(item => {
+								this.upload(item, 'image');
+							});
+						}
+					});
+					break;
 				case '新建文件夹':
 					this.$refs.newdir.open(close => {
 						if(this.newdirname == ''){

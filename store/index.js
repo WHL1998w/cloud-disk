@@ -8,12 +8,25 @@ import $H from '../common/request.js';
 
 export default new Vuex.Store({
 	state: {
-		//用来记录上传任务
+		//用来记录上传任务和下载任务
 		uploadList: [],
+		downlist: [],
 		user:null,
 		token:null
 	},
 	actions:{
+		//对上传下载任务初始化
+		initList({
+			state
+		}) {
+			if(state.user){
+				let d = uni.getStorageSync("downlist_" + state.user.id)
+				let u = uni.getStorageSync("uploadList_" + state.user.id)
+				
+				state.downlist = d ? JSON.parse(d) : []
+				state.uploadList = u ? JSON.parse(u) : []
+			}
+		},
 		//退出登录
 		logout({ state }){
 			$H.post('/logout', {},{
