@@ -400,8 +400,53 @@ export default {
 				})
 				.then(res=>{
 					this.list = this.formatList(res.rows);
-				})
-			}
+				});
+		},
+		//生成唯一ID
+		getID(length){
+			return Number(
+				Math.random().toString().substr(3, length) + Date.now()
+			).toString(36);
+		},
+		//上传
+		upload(file, type){
+			//上传文件的类型
+			let t =type;
+			//上传的key.用来区分每个文件
+			const key = this.getID(8);
+			//构建上传文件的对象，文件名，类型，大小，唯一的key，进度，状态，创建时间
+			let obj = {
+				name: file.name,
+				type: t,
+				size: file.size,
+				key,
+				progress: 0,
+				status: true,
+				created_time: new Date().getTime()
+			};
+			//创建上传任务，分发给vuex的actions,异步上传调度，主要是实际上传进度的回调
+			this.$store.dispatch('createUploadJob', obj);
+			//上传,查询参数为当前位置所在目录的id,body参数为文件路径
+			this.$H
+				.upload(
+					'/upload?file_id=' + this.file_id,
+					{
+						filePath: file.path
+					},
+					p => {
+						//更新上传任务进度
+						this.$store.dispatch('updateUploadJob',{
+							status: true,
+							progress: p,
+							key
+						});	
+					}
+				)
+				.then(res => {
+					//上传成功，请求数据更新列表
+					this.getData();
+				});
+		}
 	},
 	//计算属性
 	computed:{
