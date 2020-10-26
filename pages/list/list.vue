@@ -33,6 +33,7 @@
 							<!-- 进度条组件，uniapp自带，percent绑定下载百分比数值 -->
 							<progress slot="bottom" :percent="item.progress" activeColor="#009CFF" :stroke-width="4" ></progress>
 						</f-list>
+						
 						<view class="p-2 border-bottom border-light-secondary font text-muted">
 							下载完成（{{downed.length}}）
 						</view>
@@ -44,6 +45,7 @@
 							:showRight="false"
 						></f-list> 
 					</template>
+					
 					<!-- 上传列表 -->
 					<template v-else>
 						<view class="p-2 border-bottom border-light-secondary font text-muted">
@@ -98,7 +100,7 @@
 		computed:{
 			...mapState({
 				uploadList:state=>state.uploadList,
-				// downList:state=>state.downList
+				downList:state=>state.downList
 			}),
 			uploading(){
 				return this.uploadList.filter(item=>{
@@ -109,11 +111,35 @@
 				return this.uploadList.filter(item=>{
 					return item.progress===100;
 				});
+			},
+			downing(){
+				return this.downList.filter(item=>{
+					return item.progress<100;
+				});
+			},
+			downed(){
+				return this.downList.filter(item=>{
+					return item.progress===100;
+				});
 			}
 		},
 		methods:{
 			changeTab(index) {
 				this.tabIndex = index;
+			},
+			onNavigationBarButtonTap(){
+				uni.showModal({
+					content:'是否要清除传输记录？',
+					success:res=>{
+						if(res.confirm){
+							this.$store.dispatch('clearList');
+							uni.showToast({
+								title:'清楚成功',
+								icon:'none'
+							})
+						}
+					}
+				})
 			}
 		}
 	}
