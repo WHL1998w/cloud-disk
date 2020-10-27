@@ -134,7 +134,7 @@
 						if(res.confirm){
 							this.$store.dispatch('clearList');
 							uni.showToast({
-								title:'清楚成功',
+								title:'清除成功',
 								icon:'none'
 							})
 						}

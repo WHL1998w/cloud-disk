@@ -130,10 +130,10 @@ export default new Vuex.Store({
 			uni.getClipboardData({
 				success: (res) => {
 					//通过前面结果可以看到剪贴的链接是以http://127.0.0.1:7001/开头的，接口上线了这个地址需要修改
-					if(res.data.includes('http://127.0.0.1:7001/')){
+					if(res.data.includes('http:127.0.0.1:7001/')){
 						//需要从完成的链接截取出key的值，数据库应该知道真正的链接就是和这个有关的
-						let Key = res.data.substring(res.data.lastIndexOf('\/')+1,res.data.length)
-						if(!Key){
+						let key = res.data.substring(res.data.lastIndexOf('\/')+1,res.data.length)
+						if(!key){
 							return
 						}
 						uni.showModal({
